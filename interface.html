@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" type="text/css" href="index.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@900&display=swap" rel="stylesheet">
+</head>
+<body>
+<div id="clock-ui">
+    <div id="box-clock-time">
+        <div id="box-clock-time-helper">
+            <div id="clock-time-controls">
+                <div id="network-time">Internet Atomic Time:</div>
+                <div id="javascriptTime">00:00:00</div>
+            </div>
+            <svg id="clock-face" viewBox="0 0 2250 2250" version="1.1"
+                 xmlns="http://www.w3.org/2000/svg"
+                 xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/"
+                 style="fill-rule:evenodd;clip-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:1.5;">
+                <filter id="blurMe">
+                    <feGaussianBlur in="SourceGraphic" stdDeviation="5"/>
+                  </filter>
+                <g stroke="#5f9ea0"><path d="M1125,20.833l-0,459.694" style="fill:none;stroke-width:23.05px;"/><path
+                    d="M572.917,168.764l229.847,398.106" style="fill:none;stroke-width:23.05px;"/><path
+                    d="M168.764,572.917l398.106,229.847" style="fill:none;stroke-width:23.05px;"/><path
+                    d="M20.833,1125l459.694,0" style="fill:none;stroke-width:23.05px;"/><path
+                    d="M168.764,1677.08l398.106,-229.847" style="fill:none;stroke-width:23.05px;"/><path
+                    d="M572.917,2081.24l229.847,-398.106" style="fill:none;stroke-width:23.05px;"/><path
+                    d="M1125,2229.17l-0,-459.694" style="fill:none;stroke-width:23.05px;"/><path
+                    d="M1677.08,2081.24l-229.847,-398.106" style="fill:none;stroke-width:23.05px;"/><path
+                    d="M2081.24,1677.08l-398.106,-229.847" style="fill:none;stroke-width:23.05px;"/><path
+                    d="M2229.17,1125l-459.694,0" style="fill:none;stroke-width:23.05px;"/><path
+                    d="M2081.24,572.917l-398.106,229.847" style="fill:none;stroke-width:23.05px;"/><path
+                    d="M1677.08,168.764l-229.847,398.106" style="fill:none;stroke-width:23.05px;"/></g>
+                <g style="stroke: #ffe300;stroke-width:43.95px;" filter="url(#blurMe)" >
+                    <path d="M1125,403.912l-0,-306.463" style="fill:none" id="hand_0" class="filament"/>
+                    <path d="M1485.54,500.519l153.232,-265.404" style="fill:none" id="hand_1" class="filament"/>
+                    <path d="M1749.48,764.456l265.404,-153.232" style="fill:none" id="hand_2" class="filament"/>
+                    <path d="M1846.09,1125l306.463,0" style="fill:none" id="hand_3" class="filament"/>
+                    <path d="M1749.48,1485.54l265.404,153.232" style="fill:none" id="hand_4" class="filament"/>
+                    <path d="M1485.54,1749.48l153.232,265.404" style="fill:none" id="hand_5"/>
+                    <path d="M1125,1846.09l-0,306.463" style="fill:none" id="hand_6"/>
+                    <path d="M764.456,1749.48l-153.232,265.404" style="fill:none" id="hand_7"/>
+                    <path d="M500.519,1485.54l-265.404,153.232" style="fill:none" id="hand_8"/>
+                    <path d="M403.912,1125l-306.463,-0" style="fill:none" id="hand_9"/>
+                    <path d="M500.519,764.456l-265.404,-153.232"
+                          style="fill:none" id="hand_10"/>
+                    <path d="M764.456,500.519l-153.232,-265.404"
+                          style="fill:none" id="hand_11"/></g></svg>
+        </div>
+    </div>
+    <div id="box-logo">
+        Time, <br> Wasting It <br> <span>Rebuilt</span>
+        </span>
+
+    </div>
+    <div id="box-buttons">
+        <div class="big">Bananaman</div>
+        <form action="/" method="POST">
+            <button name="animate" value="1">Animate</button>
+            <button name="lightest" value="2">LightTest</button>
+        </form>
+    </div>
+    <script src="./index.js"></script>
+</body>
+</html>
