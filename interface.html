@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
-    <link rel="stylesheet" type="text/css" href="index.css">
+    <link rel="stylesheet" type="text/css" href="interface.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@900&display=swap" rel="stylesheet">
@@ -13,8 +13,30 @@
     <div id="box-clock-time">
         <div id="box-clock-time-helper">
             <div id="clock-time-controls">
-                <div id="network-time">Internet Atomic Time:</div>
-                <div id="javascriptTime">00:00:00</div>
+                <div style="grid-row: 1; grid-column: 1" id="auto-time">
+                    <div id="network-time" class="time-label">Reference time</div>
+                    <div id="javascriptTime" class="numerical-time">00:00:00</div>
+                </div>
+                <div style="grid-row: 2; grid-column: 1" id="manual-time">
+                    <div class="time-label">Manual time value</div>
+                    <div class="numerical-time">
+                        <input type="number" name="tentacles"
+                               min="0" max="23" value="19">
+                        <input type="number"  name="tentacles"
+                               min="0" max="59" value="30">
+                    </div>
+                </div>
+                <div id="time-toggle">
+<!--                    <form action="/" method="POST">-->
+                        <button name="toggle-time-mode" value="auto" id="time-toggle-button" onclick="toggleTimeMode(this.value)">Toggle</button>
+<!--                    </form>-->
+                </div>
+                <div id="time-adder-buttons">
+                    <div id="time-adder-minute" class="time-adder">Toggle current time mode</div>
+                    <div id="time-adder-tenner" class="time-adder">Toggle current time mode</div>
+                    <div id="time-adder-hour" class="time-adder">Toggle current time mode</div>
+                </div>
+
             </div>
             <svg id="clock-face" viewBox="0 0 2250 2250" version="1.1"
                  xmlns="http://www.w3.org/2000/svg"
@@ -64,6 +86,6 @@
             <button name="lightest" value="2">LightTest</button>
         </form>
     </div>
-    <script src="./index.js"></script>
+    <script src="./interface.js"></script>
 </body>
 </html>
