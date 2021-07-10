@@ -1,4 +1,4 @@
-const LightClock = require('./clock.js')
+const LightClock = require('./clock.js');
 
 var express = require('express');
 var path = require('path');
@@ -17,11 +17,10 @@ app.use(
 app.use(express.static(__dirname));
 
 let myClock = new LightClock();
-console.log('intiial time state', myClock.time)
+myClock.animating=true;
+// we want to have light values be output to GPIO
+myClock.setupGPIO([18,17,23,22], 50);
 
-function chonkchonk(){
-    console.log('CATS should not be CHONKS')
-}
 
 app.get('/', function(req, res){
     res.sendFile(path.join(__dirname, 'interface.html'));
@@ -53,8 +52,20 @@ setInterval(function(){
     if (myClock.animating) {
         myClock.lights.forEach( function (value, index){
             myClock.lights[index]=Math.floor(Math.random() * 244)
+
         });
+        myClock.lightsToGpio();
     } else {
-        myClock.updateLights()
+        myClock.updateLights();
+        console.log('Updating lights...')
     }
 }, 500);
+
+
+process.on('SIGINT', function() {
+    console.log("Caught interrupt signal - stopping LightClock");
+    for (let led of myClock.gpio_pins) {
+        led.digitalWrite(0);
+    }
+    process.exit();
+});
