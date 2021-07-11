@@ -13,30 +13,41 @@
     <div id="box-clock-time">
         <div id="box-clock-time-helper">
             <div id="clock-time-controls">
-                <div style="grid-row: 1; grid-column: 1" id="auto-time">
+                <div style="grid-row: 1; grid-column: 2" id="auto-time">
                     <div id="network-time" class="time-label">Reference time</div>
                     <div id="javascriptTime" class="numerical-time">00:00:00</div>
                 </div>
-                <div style="grid-row: 2; grid-column: 1" id="manual-time">
+                <div style="grid-row: 2; grid-column: 2" id="manual-time">
                     <div class="time-label">Manual time value</div>
                     <div class="numerical-time">
-                        <input type="number" name="tentacles"
-                               min="0" max="23" value="19">
-                        <input type="number"  name="tentacles"
-                               min="0" max="59" value="30">
+                        <form action="/manual-time" method="POST" name="manualTimeForm" id="manual-time-form">
+                            <input type="number" name="hour" id="manual-time-hours"
+                                   min="0" max="23" value="00" onchange="manualTimeForm.submit()">
+                            <input type="number" name="minute" id="manual-time-minutes"
+                                   min="0" max="59" value="00" onchange="manualTimeForm.submit()">
+                        </form>
                     </div>
                 </div>
                 <div id="time-toggle">
-<!--                    <form action="/" method="POST">-->
-                        <button name="toggle-time-mode" value="auto" id="time-toggle-button" onclick="toggleTimeMode(this.value)">Toggle</button>
-<!--                    </form>-->
+                    <form action="/toggle-time-mode" method="POST" id="toggle-time-mode-form">
+                        <button name="toggle-time-mode" value="auto" id="time-toggle-button"
+                                onclick="toggleTimeMode(this.value)">Toggle <br/>time<br/>mode
+                        </button>
+                    </form>
                 </div>
                 <div id="time-adder-buttons">
-                    <div id="time-adder-minute" class="time-adder">Toggle current time mode</div>
-                    <div id="time-adder-tenner" class="time-adder">Toggle current time mode</div>
-                    <div id="time-adder-hour" class="time-adder">Toggle current time mode</div>
+                    <form action="/add-time" method="POST" style="display: flex; flex-direction: column"  >
+                        <button name="add-minute" value="1" class="time-adder" onclick="changeManualTime()"
+                                >Add 1 min to time
+                        </button>
+                        <button name="add-5-minute" value="1" class="time-adder" style="margin: 10px 0px"
+                                onclick="changeManualTime()">Add 5 min to time
+                        </button>
+                        <button name="add-hour" value="1" class="time-adder" onclick="changeManualTime()"
+                               >Add 1 hour to time
+                        </button>
+                    </form>
                 </div>
-
             </div>
             <svg id="clock-face" viewBox="0 0 2250 2250" version="1.1"
                  xmlns="http://www.w3.org/2000/svg"

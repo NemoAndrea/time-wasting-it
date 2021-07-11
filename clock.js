@@ -27,10 +27,13 @@ class LightClock {
     }
 
     updateLights() {
+        // reset the time array
+        this.lights = new Array(12).fill(0);
+
         if (this.time_mode === 'auto') {
             this.time.fromDate()
         }
-        this.timeToLights()
+        this.timeToLights();
 
         // if we have GPIO output enabled, we should also write LIGHTS to the gpio pins
         if (this.gpio_pins) {
@@ -39,11 +42,12 @@ class LightClock {
     }
 
     timeToLights() {
-        this.lights[this.time.hours] = 255;
+        this.lights[this.time.hours] = this.PWMlimit;
         let minute_low = Math.floor(this.time.minutes / 5) % 12;
         let minute_high = Math.ceil(this.time.minutes / 5) % 12;
-        this.lights[minute_high] = (this.time.minutes % 5) * 14 ;
-        this.lights[minute_low] =  (5-(this.time.minutes % 5)) * 14 ;
+        this.lights[minute_high] =  Math.round((this.time.minutes % 5) /4 * this.PWMlimit/2);
+        this.lights[minute_low] = Math.round((5-(this.time.minutes % 5))/4 * this.PWMlimit/2);
+        //console.log('Current lights:', this.lights)
     }
 
     // write values in this.lights to gpio
@@ -81,13 +85,22 @@ class SimpleTime {
     }
 
     fromString(timestring) {
-
+        this.hours = Number(timestring.split(':')[0]) % 12;
+        this.minutes = Number(timestring.split(':')[1]);
     }
 
     fromDate() {
         const time = new Date();
         this.hours = time.getHours() % 12;
         this.minutes = time.getMinutes()
+    }
+
+    addMinutes(amount) {
+        let newMinutes = this.minutes + amount;
+        // carry any hours (if we crossed the 60 minute marks
+        this.hours = (this.hours + Math.floor(newMinutes/60)) % 12;
+        // and set the new minutes
+        this.minutes = newMinutes % 60;
     }
 }
 
