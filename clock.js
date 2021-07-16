@@ -1,12 +1,14 @@
 const Gpio = require('pigpio').Gpio;
+const ani = require('./animations.js');
 
 class LightClock {
     constructor() {
-        console.log('intialising time');
+        console.log('initialising time');
         this.time = new SimpleTime();
         this.time.setTime(2, 34);
         this.time_mode = 'auto';
-        this.animating = false;
+        this.animation = null;
+        this.animationHistory = {name:'', time: null};
         this.lights = new Array(12).fill(0);
     }
 
@@ -26,14 +28,38 @@ class LightClock {
         this.time.fromDate()
     }
 
+    startAnimating(animationName=null) {
+        if (animationName) { // load specific animation
+            console.log('specific animation...')
+            //TODO implement with checks
+        } else { // select random animation that is NOT the last animation
+            let keyoptions = Object.keys(ani.animations).filter(name => name !== this.animationHistory.name);
+            const animationName = keyoptions[Math.floor(Math.random() * keyoptions.length)];
+            this.animation = {name:animationName, generator:ani.animations[animationName]()};
+            this.animationHistory.name = animationName;
+            console.log('Randomly selected the following animation: ', this.animation.name)
+        }
+    }
+
     updateLights() {
         // reset the time array
         this.lights = new Array(12).fill(0);
 
-        if (this.time_mode === 'auto') {
-            this.time.fromDate()
+        if (this.animation) { // play animation
+            let animation = this.animation.generator.next();
+            if (animation.done){
+                console.log('ANIMATION FINISHED, BACK TO CLOCK MODE')
+                this.animation = null;
+            } else {  // animation in progress. set lights.
+                this.lights = animation.value;
+            }
+        } else {  // we are not animating, just show the time
+            if (this.time_mode === 'auto') { // if we are on auto time, we need to fetch the time first
+                this.time.fromDate()
+            }
+            this.timeToLights();  // convert the SimpleTime to values for the lights
+            this.checkAnimation()  // check if we should switch to a random animation.
         }
-        this.timeToLights();
 
         // if we have GPIO output enabled, we should also write LIGHTS to the gpio pins
         if (this.gpio_pins) {
@@ -43,10 +69,12 @@ class LightClock {
 
     timeToLights() {
         this.lights[this.time.hours] = this.PWMlimit;
-        let minute_low = Math.floor(this.time.minutes / 5) % 12;
-        let minute_high = Math.ceil(this.time.minutes / 5) % 12;
-        this.lights[minute_high] =  Math.round((this.time.minutes % 5) /4 * this.PWMlimit/2);
-        this.lights[minute_low] = Math.round((5-(this.time.minutes % 5))/4 * this.PWMlimit/2);
+
+        let minute_low = Math.floor(this.time.getDecimalMinutes() / 5) % 12;
+        let minute_high = Math.ceil(this.time.getDecimalMinutes() / 5) % 12;
+        this.lights[minute_high] =  Math.round((this.time.getDecimalMinutes() % 5) /4 * this.PWMlimit/2);
+        this.lights[minute_low] = Math.round((5-(this.time.getDecimalMinutes() % 5))/4 * this.PWMlimit/2);
+        //console.log('getDecimalMinutes ', this.time.getDecimalMinutes(), 'minutes:seconds', this.time.minutes, this.time.seconds, 'high:low', this.lights[minute_high],this.lights[minute_low]);
         //console.log('Current lights:', this.lights)
     }
 
@@ -56,6 +84,12 @@ class LightClock {
             let brightness= Math.min(this.lights[index], this.PWMlimit);
             pin.pwmWrite(brightness);
         });
+    }
+
+    checkAnimation() {
+        if (Math.random() < 0.005) {  // once in a hundred frames (on average) it should animate
+            this.startAnimating()
+        }
     }
 
     _setupPins(pins){
@@ -77,22 +111,32 @@ class SimpleTime {
     constructor() {
         this.hours = 0;
         this.minutes = 0;
+        this.seconds = 0;
     }
 
-    setTime(hours, minutes) {
+    setTime(hours, minutes, seconds=0) {
         this.hours = hours % 12;
         this.minutes = minutes;
+        this.seconds = seconds;
+    }
+
+    getDecimalMinutes() {
+        return this.minutes + this.seconds/60
     }
 
     fromString(timestring) {
-        this.hours = Number(timestring.split(':')[0]) % 12;
-        this.minutes = Number(timestring.split(':')[1]);
+        const split_time = timestring.split(':')
+        this.hours = Number(split_time[0]) % 12;
+        this.minutes = Number(split_time[1]) % 60;
+        // if we specified seconds (e.g. HH:MM:SS)
+        split_time.length===3 ? this.seconds = Number(split_time[2]) % 60 : this.seconds = 0;
     }
 
     fromDate() {
         const time = new Date();
         this.hours = time.getHours() % 12;
-        this.minutes = time.getMinutes()
+        this.minutes = time.getMinutes();
+        this.seconds = time.getSeconds();
     }
 
     addMinutes(amount) {

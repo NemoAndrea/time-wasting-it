@@ -88,4 +88,4 @@ setInterval(function () {
         clockupdate(clockstate, newClockState.PWMlimit);
     });
     JSclockUpdate();
-}, 500);
+}, 100);

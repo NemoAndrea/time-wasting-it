@@ -17,10 +17,9 @@ app.use(
 app.use(express.static(__dirname));
 
 let myClock = new LightClock();
-myClock.animating=false;
 // we want to have light values be output to GPIO
 myClock.setupGPIO([18,23,24,25,8,7,11,9,10,22,27,17], 50);
-//myClock.setManualTime('21:04');
+//myClock.setManualTime('03:37:30');
 
 
 app.get('/', function(req, res){
@@ -40,7 +39,7 @@ app.post('/', function(request, respond) {
     console.log(request.body)
     for (let item of Object.keys(request.body)) {
         if (item === 'animate') {
-            myClock.animating = !myClock.animating;
+            myClock.startAnimating()
         } else {
             console.log('some other button...')
         }
@@ -88,22 +87,22 @@ app.listen(port, function(err){
     }
 });
 
-console.log("LightClock Started!\n");
+//myClock.animating=false;
+myClock.startAnimating();
+console.log("LightClock Started, with animation set to: ", myClock.animation!==null," !\n");
 setInterval(function(){
-    if (myClock.animating) {
-        myClock.lights.forEach( function (value, index){
-            myClock.lights[index]=Math.floor(Math.random() * 50)
-
-        });
-        if (myClock.gpio_pins) {
-            myClock.lightsToGpio();
-        }
-        console.log('ANIMATING lights...')
-    } else {
+    // if (myClock.animating) {
+    //     myClock.lights.forEach( function (value, index){
+    //         myClock.lights[index]=Math.floor(Math.random() * 50)
+    //
+    //     });
+    //     if (myClock.gpio_pins) {
+    //         myClock.lightsToGpio();
+    //     }
+    // } else {
         myClock.updateLights();
-        console.log('Updating lights...')
-    }
-}, 500);
+    // }
+}, 50);
 
 
 process.on('SIGINT', function() {
