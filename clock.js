@@ -1,20 +1,23 @@
 const Gpio = require('pigpio').Gpio;
-const ani = require('./animations.js');
+const { animationLibrary, LightArray, minuteAnimation } = require('./animations.js');
 
 class LightClock {
     constructor() {
-        console.log('initialising time');
         this.time = new SimpleTime();
         this.time.setTime(2, 34);
+        this.minuteHand = minuteAnimation(20, 100);
         this.time_mode = 'auto';
         this.animation = null;
+        this.randomAnimations = true;
         this.animationHistory = {name:'', time: null};
-        this.lights = new Array(12).fill(0);
+        this.lightArray = new LightArray(12);
+        console.log('LightClock created...');
     }
 
     setupGPIO(pins, maxPWM) {
         this.gpio_pins = this._setupPins(pins);
         this._setPWMlimit(maxPWM);
+        this.minuteHand = minuteAnimation(20, this.PWMlimit*3/4);
     }
 
     setManualTime(timestring) {
@@ -30,35 +33,42 @@ class LightClock {
 
     startAnimating(animationName=null) {
         if (animationName) { // load specific animation
-            console.log('specific animation...')
-            //TODO implement with checks
+            if (animationName in animationLibrary) {
+                this.animation = {name:animationName, generator:animationLibrary[animationName]()};
+            } else {
+                throw new Error(`requested animation ${animationName} not in animation library.`)
+            }
         } else { // select random animation that is NOT the last animation
-            let keyoptions = Object.keys(ani.animations).filter(name => name !== this.animationHistory.name);
-            const animationName = keyoptions[Math.floor(Math.random() * keyoptions.length)];
-            this.animation = {name:animationName, generator:ani.animations[animationName]()};
-            this.animationHistory.name = animationName;
+            let keyoptions = Object.keys(animationLibrary).filter(name => name !== this.animationHistory.name);
+            const chosenAnimation = keyoptions[Math.floor(Math.random() * keyoptions.length)];
+            this.animation = {name:chosenAnimation, generator:animationLibrary[chosenAnimation]()};
+            this.animationHistory.name = chosenAnimation;
             console.log('Randomly selected the following animation: ', this.animation.name)
         }
     }
 
     updateLights() {
         // reset the time array
-        this.lights = new Array(12).fill(0);
+        this.lightArray = new LightArray(12);
 
         if (this.animation) { // play animation
             let animation = this.animation.generator.next();
             if (animation.done){
-                console.log('ANIMATION FINISHED, BACK TO CLOCK MODE')
+                console.log('ANIMATION FINISHED, BACK TO CLOCK MODE');
                 this.animation = null;
             } else {  // animation in progress. set lights.
-                this.lights = animation.value;
+                this.lightArray = animation.value;
             }
         } else {  // we are not animating, just show the time
             if (this.time_mode === 'auto') { // if we are on auto time, we need to fetch the time first
                 this.time.fromDate()
             }
             this.timeToLights();  // convert the SimpleTime to values for the lights
-            this.checkAnimation()  // check if we should switch to a random animation.
+
+            // check if we should switch to a random animation.
+            if (this.randomAnimations) {
+                this.checkAnimation()
+            }
         }
 
         // if we have GPIO output enabled, we should also write LIGHTS to the gpio pins
@@ -68,20 +78,16 @@ class LightClock {
     }
 
     timeToLights() {
-        this.lights[this.time.hours] = this.PWMlimit;
-
-        let minute_low = Math.floor(this.time.getDecimalMinutes() / 5) % 12;
-        let minute_high = Math.ceil(this.time.getDecimalMinutes() / 5) % 12;
-        this.lights[minute_high] =  Math.round((this.time.getDecimalMinutes() % 5) /4 * this.PWMlimit/2);
-        this.lights[minute_low] = Math.round((5-(this.time.getDecimalMinutes() % 5))/4 * this.PWMlimit/2);
-        //console.log('getDecimalMinutes ', this.time.getDecimalMinutes(), 'minutes:seconds', this.time.minutes, this.time.seconds, 'high:low', this.lights[minute_high],this.lights[minute_low]);
-        //console.log('Current lights:', this.lights)
+        // set minutes
+        this.lightArray.setValue(this.time.getDecimalMinutes() / 5, this.minuteHand.next().value);
+        // set hour
+        this.lightArray.setValue(this.time.hours, this.PWMlimit);
     }
 
-    // write values in this.lights to gpio
+    // write values in this.lightArray to gpio
     lightsToGpio(){
         this.gpio_pins.forEach((pin, index) => {
-            let brightness= Math.min(this.lights[index], this.PWMlimit);
+            let brightness= Math.min(this.lightArray.lights[index], this.PWMlimit);
             pin.pwmWrite(brightness);
         });
     }
@@ -104,8 +110,6 @@ class LightClock {
         this.PWMlimit = maxPWM;  // maximum value for PWM (at most 255) //TODO: check value
     }
 }
-
-module.exports = LightClock;
 
 class SimpleTime {
     constructor() {
@@ -147,4 +151,6 @@ class SimpleTime {
         this.minutes = newMinutes % 60;
     }
 }
+
+module.exports = LightClock;
 

@@ -1,11 +1,16 @@
 let clockstate = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 
 async function fetchInitialValues() {
-    displayTimeMode();
-
-    const res2 = await fetch('http://localhost:3000/clock/animating');
+    const res2 = await fetch('http://localhost:3000/clock/animation/name');
     const animating = await res2.json();
     console.log('Is the clock initially animating?: ', animating)
+
+    fetchAnimations();
+    fetchManualTime();
+    fetchStatus();
+    setTimeout(function (){
+        displayTimeMode();
+    }, 50);
 };
 
 fetchInitialValues();
@@ -32,7 +37,7 @@ let JSclockUpdate = () =>{
         ('0 '+ JavascriptTime.getSeconds()).slice(-2);
 };
 
-function changeManualTime(){
+function fetchManualTime(){
     // since we have increased the manual time, we need to ensure this is reflected in the input boxes.
     setTimeout(async function (){
         const response = await fetch('http://localhost:3000/clock/time_mode');
@@ -41,6 +46,32 @@ function changeManualTime(){
         document.querySelector('#manual-time-minutes').value = data.time.minutes;
     }, 50);
 
+}
+
+async function fetchStatus(){
+    const response = await fetch('http://localhost:3000/clock/animation/random');
+    const randomAnimation = await response.json();  // auto or manual
+    let statusRandomEl = document.querySelector('#status-random');
+    if (randomAnimation) {
+        statusRandomEl.classList.add('active');
+        statusRandomEl.classList.remove('inactive');
+    } else {
+        statusRandomEl.classList.add('inactive');
+        statusRandomEl.classList.remove('active');
+    }
+
+    const response_2 = await fetch('http://localhost:3000/clock/animation/name');
+    const anim_name = await response_2.json();  // auto or manual
+    let statusAnimEl = document.querySelector('#status-animating');
+    if (anim_name !== false) {
+        statusAnimEl.classList.add('active');
+        statusAnimEl.classList.remove('inactive')
+        document.querySelector('#status-animating-name').innerHTML = ": " + anim_name;
+    } else {
+        statusAnimEl.classList.add('inactive');
+        statusAnimEl.classList.remove('active');
+        document.querySelector('#status-animating-name').innerHTML = "";
+    }
 }
 
 function toggleTimeMode(state) {
@@ -81,11 +112,35 @@ async function displayTimeMode() {
     }
 }
 
+async function fetchAnimations() {
+    const response = await fetch('http://localhost:3000/clock/animation/available');
+    const animations = await response.json();  // list of names of all the animations that can be chosen
+    console.log('Available animations are: ', animations);
+
+    // display the animation options
+    let template = document.querySelector('#animation-box-template');
+    let menu = document.querySelector('#animation-selector');
+    for (const animation of animations) {
+        let animationBox = template.cloneNode(true);
+        animationBox.id = null;
+        animationBox.value = animation;
+        animationBox.name = animation;
+        //animationBox.innerHTML = animation;
+        menu.appendChild(animationBox)
+    }
+
+}
+
+let tracker = 0;
 setInterval(function () {
-   //console.log(clockstate)
     refreshClock().then(newClockState => {
         clockstate = newClockState.lights;
         clockupdate(clockstate, newClockState.PWMlimit);
     });
     JSclockUpdate();
+    if (tracker===5) {
+        fetchStatus();
+        tracker=0;
+    }
+    tracker++
 }, 100);

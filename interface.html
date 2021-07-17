@@ -36,15 +36,15 @@
                     </form>
                 </div>
                 <div id="time-adder-buttons">
-                    <form action="/add-time" method="POST" style="display: flex; flex-direction: column"  >
-                        <button name="add-minute" value="1" class="time-adder" onclick="changeManualTime()"
-                                >Add 1 min to time
+                    <form action="/add-time" method="POST" style="display: flex; flex-direction: column">
+                        <button name="add-minute" value="1" class="time-adder" onclick="fetchManualTime()"
+                        >Add 1 min to time
                         </button>
                         <button name="add-5-minute" value="1" class="time-adder" style="margin: 10px 0px"
-                                onclick="changeManualTime()">Add 5 min to time
+                                onclick="fetchManualTime()">Add 5 min to time
                         </button>
-                        <button name="add-hour" value="1" class="time-adder" onclick="changeManualTime()"
-                               >Add 1 hour to time
+                        <button name="add-hour" value="1" class="time-adder" onclick="fetchManualTime()"
+                        >Add 1 hour to time
                         </button>
                     </form>
                 </div>
@@ -56,19 +56,30 @@
                 <filter id="blurMe">
                     <feGaussianBlur in="SourceGraphic" stdDeviation="5"/>
                   </filter>
-                <g stroke="#5f9ea0"><path d="M1125,20.833l-0,459.694" style="fill:none;stroke-width:23.05px;"/><path
-                    d="M572.917,168.764l229.847,398.106" style="fill:none;stroke-width:23.05px;"/><path
-                    d="M168.764,572.917l398.106,229.847" style="fill:none;stroke-width:23.05px;"/><path
-                    d="M20.833,1125l459.694,0" style="fill:none;stroke-width:23.05px;"/><path
-                    d="M168.764,1677.08l398.106,-229.847" style="fill:none;stroke-width:23.05px;"/><path
-                    d="M572.917,2081.24l229.847,-398.106" style="fill:none;stroke-width:23.05px;"/><path
-                    d="M1125,2229.17l-0,-459.694" style="fill:none;stroke-width:23.05px;"/><path
-                    d="M1677.08,2081.24l-229.847,-398.106" style="fill:none;stroke-width:23.05px;"/><path
-                    d="M2081.24,1677.08l-398.106,-229.847" style="fill:none;stroke-width:23.05px;"/><path
-                    d="M2229.17,1125l-459.694,0" style="fill:none;stroke-width:23.05px;"/><path
-                    d="M2081.24,572.917l-398.106,229.847" style="fill:none;stroke-width:23.05px;"/><path
-                    d="M1677.08,168.764l-229.847,398.106" style="fill:none;stroke-width:23.05px;"/></g>
-                <g style="stroke: #ffe300;stroke-width:43.95px;" filter="url(#blurMe)" >
+                <g stroke="#5f9ea0"><path d="M1125,20.833l-0,459.694" style="fill:none;stroke-width:23.05px;"/>
+                    <path
+                            d="M572.917,168.764l229.847,398.106" style="fill:none;stroke-width:23.05px;"/>
+                    <path
+                            d="M168.764,572.917l398.106,229.847" style="fill:none;stroke-width:23.05px;"/>
+                    <path
+                            d="M20.833,1125l459.694,0" style="fill:none;stroke-width:23.05px;"/>
+                    <path
+                            d="M168.764,1677.08l398.106,-229.847" style="fill:none;stroke-width:23.05px;"/>
+                    <path
+                            d="M572.917,2081.24l229.847,-398.106" style="fill:none;stroke-width:23.05px;"/>
+                    <path
+                            d="M1125,2229.17l-0,-459.694" style="fill:none;stroke-width:23.05px;"/>
+                    <path
+                            d="M1677.08,2081.24l-229.847,-398.106" style="fill:none;stroke-width:23.05px;"/>
+                    <path
+                            d="M2081.24,1677.08l-398.106,-229.847" style="fill:none;stroke-width:23.05px;"/>
+                    <path
+                            d="M2229.17,1125l-459.694,0" style="fill:none;stroke-width:23.05px;"/>
+                    <path
+                            d="M2081.24,572.917l-398.106,229.847" style="fill:none;stroke-width:23.05px;"/>
+                    <path
+                            d="M1677.08,168.764l-229.847,398.106" style="fill:none;stroke-width:23.05px;"/></g>
+                <g style="stroke: #ffe300;stroke-width:43.95px;" filter="url(#blurMe)">
                     <path d="M1125,403.912l-0,-306.463" style="fill:none" id="hand_0" class="filament"/>
                     <path d="M1485.54,500.519l153.232,-265.404" style="fill:none" id="hand_1" class="filament"/>
                     <path d="M1749.48,764.456l265.404,-153.232" style="fill:none" id="hand_2" class="filament"/>
@@ -86,15 +97,36 @@
         </div>
     </div>
     <div id="box-logo">
-        Time, <br> Wasting It <br> <span>Rebuilt</span>
-        </span>
-
+        <div>
+        Time, <br> Wasting It <br>
+        </div>
+        <div>
+            <div id="logo-rebuilt">
+                rebuilt
+            </div>
+        </div>
+        <div>
+            <div id="logo-credit">
+                By Nemo & Bo<br> Andrea
+            </div>
+        </div>
     </div>
     <div id="box-buttons">
-        <div class="big">Bananaman</div>
-        <form action="/" method="POST">
-            <button name="animate" value="1">Animate</button>
-            <button name="lightest" value="2">LightTest</button>
+        <div class="big">Status</div>
+        <div style="display: flex">
+            <div class="status-box" id="status-random">
+                <div class="status-title">Random Animations</div>
+                <div class="status-description">Will clock randomly play animations?</div>
+            </div>
+            <div class="status-box" id="status-animating">
+                <div class="status-title">Animating<span id="status-animating-name"></span></div>
+                <div class="status-description">Is clock currently animating?</div>
+            </div>
+        </div>
+        <div class="big">Select animation to play</div>
+        <form action="/play-animation" method="POST" id="animation-selector">
+            <input type="submit" class="animation-box" id="animation-box-template"
+                   value="placeholder - loading animations...">
         </form>
     </div>
     <script src="./interface.js"></script>

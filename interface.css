@@ -44,13 +44,25 @@ body {
     border: 2px solid var(--primary);
     border-bottom: none;
     border-radius: 30px 30px 0 0;
+
+    display: flex;
+    align-items: center;
 }
 
-#box-logo span{
+#logo-rebuilt{
     background-color: rgba(255, 255, 255, 0.87);
-    padding-left: 5px;
-    padding-right: 7px;
+    padding-left: 16px;
+    padding-right: 21px;
     color: black;
+    font-size: 5rem;
+    margin-left: 3rem;
+    border-radius: 30px;
+}
+
+#logo-credit {
+    font-size: 1.4rem;
+    color: rgba(255, 255, 255, 0.87);
+    margin: 1rem;
 }
 
 #box-buttons {
@@ -139,9 +151,68 @@ body {
 }
 
 .big {
-    font-size: 1.6rem;
+    font-size: 1.8rem;
+    font-family: sans-serif;
+    margin: 24px 0 18px 10px;
+}
+
+.animation-box {
+    display: block;
+    width: 95%;
+    text-align: start;
+    font-family: sans-serif;
+    font-size: 1.4rem;
+    padding: 1.8rem 0.5rem 1.8rem 1.5rem;
+    border: 1px solid var(--primary);
+    border-left: 11px solid var(--primary);
+    border-radius: 15px 15px 15px 15px ;
+    margin: 10px;
+    font-weight: normal;
+    background-color: transparent;
+    color: #fafafa;
+}
+
+.animation-box:hover {
+    background-color: rgba(255,255,255,0.1);
+}
+
+#animation-box-template {
+    display: none;
 }
 
 .filament {
     transition: stroke-width 0.3s;
+}
+
+.status-box {
+    font-family: sans-serif;
+    padding: 10px;
+    margin: 10px;
+    border-radius: 12px;
+    border: 2px solid #fafafa;
+}
+
+.status-box.active {
+    background-color: forestgreen;
+}
+
+.status-box.inactive{
+    background-color: darkred;
+}
+
+.status-title {
+    font-size: 1.4rem;
+    font-weight: bold;
+}
+
+#animation-selector{
+    overflow-y: scroll;
+}
+::-webkit-scrollbar {
+    width: 0;  /* Remove scrollbar space */
+    background: transparent;  /* Optional: just make scrollbar invisible */
+}
+/* Optional: show position indicator in red */
+::-webkit-scrollbar-thumb {
+    background: var(--primary);
 }
