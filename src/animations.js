@@ -87,6 +87,7 @@ function* minuteHand(framerate, maxIntensity) {
         let cycle = (animationFrame/framerate) % 1;
         if (cycle === 0) {
             decreasing = !decreasing;  // flip mode (increasing/decreasing)
+            animationFrame=0;
         }
 
         // return the target intensity

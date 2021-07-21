@@ -49,15 +49,17 @@ function fetchManualTime(){
 }
 
 async function fetchStatus(){
-    const response = await fetch('http://localhost:3000/clock/animation/random');
+    const response = await fetch('http://localhost:3000/clock/animation/random-frequency');
     const randomAnimation = await response.json();  // auto or manual
     let statusRandomEl = document.querySelector('#status-random');
-    if (randomAnimation) {
+    if (randomAnimation > 0) {
         statusRandomEl.classList.add('active');
         statusRandomEl.classList.remove('inactive');
+        document.querySelector('#status-random-freq').innerHTML = ": t<sub>avg</sub> = " + randomAnimation+"s";
     } else {
         statusRandomEl.classList.add('inactive');
         statusRandomEl.classList.remove('active');
+        document.querySelector('#status-random-freq').innerHTML = "";
     }
 
     const response_2 = await fetch('http://localhost:3000/clock/animation/name');
@@ -135,7 +137,8 @@ let tracker = 0;
 setInterval(function () {
     refreshClock().then(newClockState => {
         clockstate = newClockState.lights;
-        clockupdate(clockstate, newClockState.PWMlimit);
+        console.log(clockstate);
+        clockupdate(clockstate, newClockState.PWMlimits.upper);
     });
     JSclockUpdate();
     if (tracker===5) {

@@ -4,30 +4,44 @@ const { animationLibrary, LightArray, minuteAnimation } = require('./animations.
 class LightClock {
     constructor() {
         this.time = new SimpleTime();
-        this.time.setTime(2, 34);
-        this.minuteHand = minuteAnimation(20, 100);
-        this.time_mode = 'auto';
+        this.timeMode = 'auto';
         this.animation = null;
-        this.randomAnimations = true;
+        this.randomAnimationFrequency = 0;
         this.animationHistory = {name:'', time: null};
         this.lightArray = new LightArray(12);
+        this.PWMlimits = { "upper": 120, "hourHand": 100, "minuteHand": 50};
+        this.tickrate = 50;  // clock updates tickrate times per second. Higher is faster.
+        this.minuteHand = minuteAnimation(this.tickrate, this.PWMlimits.minuteHand);
         console.log('LightClock created...');
     }
 
-    setupGPIO(pins, maxPWM) {
-        this.gpio_pins = this._setupPins(pins);
-        this._setPWMlimit(maxPWM);
-        this.minuteHand = minuteAnimation(20, this.PWMlimit*3/4);
+    start() {  // have the clock start ticking, by repeatedly calling the updateLights() function
+        const tickInterval = 1000/this.tickrate;
+        setInterval(()=>{
+            this.updateLights();
+            // }
+        }, tickInterval);
+    }
+
+    setupGPIO(pins) {
+        console.assert(pins.length > 0, "No pin numbers specified for GPIO (got empty array)");
+        let gpio = [];
+        for (const pin of pins) {
+            gpio.push(new Gpio(pin, {mode: Gpio.OUTPUT}))
+        }
+        this.gpio_pins = gpio;
+        console.log('<< Using GPIO outputs >>');
+
     }
 
     setManualTime(timestring) {
-        this.time_mode = 'manual';
+        this.timeMode = 'manual';
         // todo validate this
         this.time.fromString(timestring);
     }
 
     setAutoTime() {
-        this.time_mode = 'auto';
+        this.timeMode = 'auto';
         this.time.fromDate()
     }
 
@@ -60,13 +74,13 @@ class LightClock {
                 this.lightArray = animation.value;
             }
         } else {  // we are not animating, just show the time
-            if (this.time_mode === 'auto') { // if we are on auto time, we need to fetch the time first
+            if (this.timeMode === 'auto') { // if we are on auto time, we need to fetch the time first
                 this.time.fromDate()
             }
             this.timeToLights();  // convert the SimpleTime to values for the lights
 
             // check if we should switch to a random animation.
-            if (this.randomAnimations) {
+            if (this.randomAnimationFrequency > 0) {
                 this.checkAnimation()
             }
         }
@@ -81,33 +95,44 @@ class LightClock {
         // set minutes
         this.lightArray.setValue(this.time.getDecimalMinutes() / 5, this.minuteHand.next().value);
         // set hour
-        this.lightArray.setValue(this.time.hours, this.PWMlimit);
+        this.lightArray.setValue(this.time.hours, this.PWMlimits.hourHand);
     }
 
     // write values in this.lightArray to gpio
     lightsToGpio(){
         this.gpio_pins.forEach((pin, index) => {
-            let brightness= Math.min(this.lightArray.lights[index], this.PWMlimit);
+            let brightness= Math.min(this.lightArray.lights[index], this.PWMlimits.upper);
             pin.pwmWrite(brightness);
         });
     }
 
+    // toss a coin and see if we should animate now
     checkAnimation() {
-        if (Math.random() < 0.005) {  // once in a hundred frames (on average) it should animate
-            this.startAnimating()
+        if (this.randomAnimationFrequency !== 0) {  // if it is zero it would be pointless to compute the next step
+            // toss a (biased) coin and see if we should animate based on outcome
+            // the randomAnimationFrequency sets the time (s) it takes from the last animation
+            // for a 50% chance for the next event. -> geometric distribution E[X]=1/p
+            // we know E[x] = this.randomAnimationFrequency * this.tickrate
+            const p = 1 / (this.randomAnimationFrequency * this.tickrate);
+            if (Math.random() < p) {
+                this.startAnimating()
+            }
         }
     }
 
-    _setupPins(pins){
-        let gpio = [];
-        for (const pin of pins) {
-            gpio.push(new Gpio(pin, {mode: Gpio.OUTPUT}))
+    setPWMlimit(PWMlimits) {
+        // check if values are proper
+        for (const [key, pwmValue] of Object.entries(PWMlimits)) {
+            if (pwmValue > 255 && pwmValue >= 0) {
+                throw `The PWM limit for ${key} is not within the correct range [0,255] with a value of ${pwmValue}`
+            } else {  // value range is okay, but let's make sure it is an integer
+                PWMlimits[key] = Math.round(pwmValue)
+            }
         }
-        return gpio
-    }
-
-    _setPWMlimit(maxPWM) {
-        this.PWMlimit = maxPWM;  // maximum value for PWM (at most 255) //TODO: check value
+        // set limits
+        this.PWMlimits = PWMlimits;
+        // update the minutehand
+        this.minuteHand = minuteAnimation(this.tickrate, this.PWMlimits.minuteHand);
     }
 }
 

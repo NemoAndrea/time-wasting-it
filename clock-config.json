@@ -1,0 +1,14 @@
+{
+  "GPIO": [18,23,24,25,8,7,11,9,10,22,27,17],
+  "PWMlimits": {
+    "upper": 80,
+    "hourHand": 60,
+    "minuteHand": 50
+  },
+  "timeMode": "auto",
+  "randomAnimationFrequency": 60,
+  "webInterface": {
+    "port": 3000,
+    "enabled": true
+  }
+}
