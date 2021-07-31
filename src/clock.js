@@ -1,4 +1,4 @@
-const Gpio = require('pigpio').Gpio;
+//const Gpio = require('pigpio').Gpio;
 const { animationLibrary, LightArray, minuteAnimation } = require('./animations.js');
 
 class LightClock {
@@ -23,15 +23,18 @@ class LightClock {
         }, tickInterval);
     }
 
-    setupGPIO(pins) {
+    setupGPIO(pins, mirrored=false) {
         console.assert(pins.length > 0, "No pin numbers specified for GPIO (got empty array)");
         let gpio = [];
-        for (const pin of pins) {
+        // For some applications, you may want to have the lights mirrored along the vertical axis
+        // This is simply a matter of reversing the pin order. This is preferred over providing the GPIO pins
+        // in reversed order, as this way you can set mirrored=false and get a meaningful output during testing.
+        const gpio_pins = mirrored? pins.reverse() : pins;
+        for (const pin of gpio_pins) {
             gpio.push(new Gpio(pin, {mode: Gpio.OUTPUT}))
         }
         this.gpio_pins = gpio;
-        console.log('<< Using GPIO outputs >>');
-
+        console.log('<< Using GPIO outputs: ', gpio_pins, ' >>');
     }
 
     setManualTime(timestring) {
@@ -48,14 +51,14 @@ class LightClock {
     startAnimating(animationName=null) {
         if (animationName) { // load specific animation
             if (animationName in animationLibrary) {
-                this.animation = {name:animationName, generator:animationLibrary[animationName]()};
+                this.animation = {name:animationName, generator:animationLibrary[animationName](this.PWMlimits.upper)};
             } else {
                 throw new Error(`requested animation ${animationName} not in animation library.`)
             }
         } else { // select random animation that is NOT the last animation
             let keyoptions = Object.keys(animationLibrary).filter(name => name !== this.animationHistory.name);
             const chosenAnimation = keyoptions[Math.floor(Math.random() * keyoptions.length)];
-            this.animation = {name:chosenAnimation, generator:animationLibrary[chosenAnimation]()};
+            this.animation = {name:chosenAnimation, generator:animationLibrary[chosenAnimation](this.PWMlimits.upper)};
             this.animationHistory.name = chosenAnimation;
             console.log('Randomly selected the following animation: ', this.animation.name)
         }

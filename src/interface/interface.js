@@ -137,7 +137,6 @@ let tracker = 0;
 setInterval(function () {
     refreshClock().then(newClockState => {
         clockstate = newClockState.lights;
-        console.log(clockstate);
         clockupdate(clockstate, newClockState.PWMlimits.upper);
     });
     JSclockUpdate();

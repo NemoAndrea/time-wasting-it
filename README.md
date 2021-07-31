@@ -28,6 +28,10 @@ The values settable are:
 
   > If an empty array is provided `[]` the clock will not do any GPIO operations. This is useful if you want to run test's without the hardware and use only the web interface
 
+* `mirroredGPIO`: Boolean value indicating whether to reverse the order of the values in `GPIO`, resulting in the clock pattern being mirrored along the vertical axis. Useful if your hardware layout is mirrored. (e.g. your PCB orientation is backwards w.r.t. the lights of the clock). 
+
+* `GPIObuttons`: array of integers indication GPIO pin numbers to be used for buttons. Used in `PUD_UP` mode. **Only two actions are registered, so the maximum number of GPIO pins that can be entered here is 2.** Leaving it as an empty array  `[]` means no buttons will be used. 
+
 * `PWMlimits` : Object that specifies three limits for PWM values, which in  `pigpio`  can be set between [0,255]
 
   * `PWMlimits.upper` : maximum PWM value that can be set for GPIO. Safety value and maximum intensity for animations.
