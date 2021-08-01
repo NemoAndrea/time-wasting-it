@@ -1,11 +1,11 @@
 {
-  "GPIO": [18,23,24,25,8,7,11,9,10,22,27,17],
+  "GPIO": [4,17,27,10,9,11,  7,8,25,18,15,14],
   "mirroredGPIO": false,
-  "GPIObuttons": [],
+  "GPIObuttons": [23, 24],
   "PWMlimits": {
-    "upper": 80,
+    "upper": 60,
     "hourHand": 60,
-    "minuteHand": 50
+    "minuteHand": 60
   },
   "timeMode": "auto",
   "randomAnimationFrequency": 60,
