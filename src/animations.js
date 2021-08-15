@@ -19,7 +19,7 @@ let animations = {
         while (animationFrame < 300) {
             animationFrame++;
 
-            if (intensity === maxPWM/2) {
+            if (intensity === maxPWM/4) {
                 direction = -1;
             }
             if (intensity === 0) {
@@ -115,22 +115,22 @@ let animations = {
     },
 
     // random lights intensities, updated every 10 animation frames
-    randomAll: function* (maxPWM) {
-        let animationFrame = 0;
-        let lastLights = new LightArray(12,1);
-
-        while (animationFrame < 300) {
-            animationFrame++;
-
-            if (animationFrame % 10 === 0) {
-                for (let i = 0; i < 12; i++) {
-                    lastLights.setValue(i, Math.random() * maxPWM / 2)
-                }
-            }
-
-            yield lastLights
-        }
-    },
+    // randomAll: function* (maxPWM) {
+    //     let animationFrame = 0;
+    //     let lastLights = new LightArray(12,1);
+    //
+    //     while (animationFrame < 300) {
+    //         animationFrame++;
+    //
+    //         if (animationFrame % 10 === 0) {
+    //             for (let i = 0; i < 12; i++) {
+    //                 lastLights.setValue(i, Math.random() * maxPWM / 2)
+    //             }
+    //         }
+    //
+    //         yield lastLights
+    //     }
+    // },
 
     // random lights intensities (for 6 locations only), updated every 10 animation frames
     randomSix: function* (maxPWM) {

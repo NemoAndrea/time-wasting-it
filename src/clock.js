@@ -1,4 +1,4 @@
-//const Gpio = require('pigpio').Gpio;
+const Gpio = require('pigpio').Gpio;
 const { animationLibrary, LightArray, minuteAnimation } = require('./animations.js');
 
 class LightClock {
@@ -29,7 +29,7 @@ class LightClock {
         // For some applications, you may want to have the lights mirrored along the vertical axis
         // This is simply a matter of reversing the pin order. This is preferred over providing the GPIO pins
         // in reversed order, as this way you can set mirrored=false and get a meaningful output during testing.
-        const gpio_pins = mirrored? pins.reverse() : pins;
+        const gpio_pins = mirrored? arrayRotate(pins.reverse(), -1) : pins;
         for (const pin of gpio_pins) {
             gpio.push(new Gpio(pin, {mode: Gpio.OUTPUT}))
         }
@@ -181,4 +181,10 @@ class SimpleTime {
 }
 
 module.exports = LightClock;
+
+function arrayRotate(arr, count) {
+    count -= arr.length * Math.floor(count / arr.length);
+    arr.push.apply(arr, arr.splice(0, count));
+    return arr;
+}
 
