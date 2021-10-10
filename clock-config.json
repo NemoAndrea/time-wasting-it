@@ -3,14 +3,15 @@
   "mirroredGPIO": true,
   "GPIObuttons": [23, 24],
   "PWMlimits": {
-    "upper": 160,
-    "hourHand": 100,
+    "upper": 120,
+    "hourHand": 90,
     "minuteHand": 120
   },
   "timeMode": "auto",
-  "randomAnimationFrequency": 300,
+  "randomAnimationFrequency": 240,
   "webInterface": {
     "port": 3000,
     "enabled": true
-  }
+  },
+  "nightModeTimeLimits": [17, 8]
 }

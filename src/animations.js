@@ -11,26 +11,26 @@ function mod(n, m) {
 // The default tickrate for  the clock is 50, so 300 animation frames is 300/50 = 6 seconds.
 let animations = {
 
-    pulseAll: function* (maxPWM) {
-        let animationFrame = 0;
-        let intensity = 0;
-        let direction = 1;
-
-        while (animationFrame < 300) {
-            animationFrame++;
-
-            if (intensity === maxPWM/4) {
-                direction = -1;
-            }
-            if (intensity === 0) {
-                direction = 1
-            }
-            intensity += direction;
-            let lights = new LightArray(12, intensity);
-
-            yield lights
-        }
-    },
+    // pulseAll: function* (maxPWM) {
+    //     let animationFrame = 0;
+    //     let intensity = 0;
+    //     let direction = 1;
+    //
+    //     while (animationFrame < 300) {
+    //         animationFrame++;
+    //
+    //         if (intensity === maxPWM/4) {
+    //             direction = -1;
+    //         }
+    //         if (intensity === 0) {
+    //             direction = 1
+    //         }
+    //         intensity += direction;
+    //         let lights = new LightArray(12, intensity);
+    //
+    //         yield lights
+    //     }
+    // },
 
     // roundTheClock: function* () {
     //     let animationFrame = 0;
@@ -224,9 +224,39 @@ let animations = {
         }
     },
 
+    // random light is picked, and the opposite side will bloom out
+    theArrow: function* (maxPWM) {
+        let animationFrame = 0;
+        let lastLights = new LightArray(12);
+        let arrowBase = 0;
+        let arrowHead = 6;
+        let bloomFactor = 10;
+
+        while (animationFrame < 300) {
+            // every 100 animation frames we want to reset the arrow shape
+            if (animationFrame % 80 === 0) {
+                // pick a random light
+                arrowBase = Math.floor(Math.random()*12);
+                // opposite the base
+                arrowHead = Math.floor((arrowBase + 6) % 12);
+                console.log(arrowHead);
+                // reset bloomfactor
+                bloomFactor = 10;
+            }
+            let lights = new LightArray(12);
+            lights.setValue(arrowBase, maxPWM/2);
+            lights.setValue(arrowHead, bloomFactor/100*maxPWM);
+            lights.setValue(arrowHead+1, bloomFactor/150*maxPWM);
+            lights.setValue(arrowHead-1, bloomFactor/150*maxPWM);
+            lights.setValue(arrowHead+2, bloomFactor/200*maxPWM);
+            lights.setValue(arrowHead-2, bloomFactor/200*maxPWM);
 
 
-
+            bloomFactor++;
+            animationFrame++;
+            yield lights
+        }
+    },
 };
 
 function* minuteHand(framerate, maxIntensity) {

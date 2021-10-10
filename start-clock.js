@@ -12,6 +12,8 @@ let myClock = new LightClock();
 if (clockConfig.GPIO.length > 0) { myClock.setupGPIO(clockConfig.GPIO, clockConfig.mirroredGPIO) }
 // set limits for PWM, which you should determine for your light and current values
 myClock.setPWMlimit(clockConfig.PWMlimits);
+// set the NightMode time limits e.g. [20, 8] means night mode is active between 20:00-8:00
+myClock.setNightModeLimits(clockConfig.nightModeTimeLimits);
 // Set the random animation state (true/false)
 myClock.randomAnimationFrequency = clockConfig.randomAnimationFrequency;
 // if timeMode does not equal 'auto', it should be some time string e.g. '12:45' or '15:32:55'

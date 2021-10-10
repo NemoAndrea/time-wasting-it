@@ -3,6 +3,7 @@ const { animationLibrary, LightArray, minuteAnimation } = require('./animations.
 
 class LightClock {
     constructor() {
+        // default values, (some) to be overriden by config
         this.time = new SimpleTime();
         this.timeMode = 'auto';
         this.animation = null;
@@ -12,6 +13,8 @@ class LightClock {
         this.PWMlimits = { "upper": 120, "hourHand": 100, "minuteHand": 50};
         this.tickrate = 50;  // clock updates tickrate times per second. Higher is faster.
         this.minuteHand = minuteAnimation(this.tickrate, this.PWMlimits.minuteHand);
+        this.nightLimits = [22, 6];  // in hours so 22:00-6:00
+        this.nightModeActive=false;
         console.log('LightClock created...');
     }
 
@@ -103,10 +106,26 @@ class LightClock {
 
     // write values in this.lightArray to gpio
     lightsToGpio(){
-        this.gpio_pins.forEach((pin, index) => {
-            let brightness= Math.min(this.lightArray.lights[index], this.PWMlimits.upper);
-            pin.pwmWrite(brightness);
-        });
+        const oldNightMode = this.nightModeActive;
+        const currentHour = new Date().getHours();
+        this.nightModeActive = currentHour >= this.nightLimits[0] || currentHour < this.nightLimits[1];
+        if (this.nightModeActive !== oldNightMode) { // we switched day/night mode
+            if (this.nightModeActive) { console.log("Switching to night mode, dimming the lights...")}
+            if (!this.nightModeActive) { console.log("Switching to day mode, lights back to normal brightness!")}
+        }
+
+        if (this.nightModeActive) { // we are in NightMode
+            // lower (the intensities and the maximum value by 2 (dimmer lights)
+            this.gpio_pins.forEach((pin, index) => {
+                let brightness = Math.min(Math.round(this.lightArray.lights[index]/2), Math.floor(this.PWMlimits.upper/2));
+                pin.pwmWrite(brightness);
+            });
+        } else { // we are in normal (daytime) mode
+            this.gpio_pins.forEach((pin, index) => {
+                let brightness = Math.min(this.lightArray.lights[index], this.PWMlimits.upper);
+                pin.pwmWrite(brightness);
+            });
+        }
     }
 
     // toss a coin and see if we should animate now
@@ -136,6 +155,10 @@ class LightClock {
         this.PWMlimits = PWMlimits;
         // update the minutehand
         this.minuteHand = minuteAnimation(this.tickrate, this.PWMlimits.minuteHand);
+    }
+
+    setNightModeLimits(nightLimits) {
+        this.nightLimits = nightLimits;
     }
 }
 
