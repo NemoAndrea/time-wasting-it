@@ -10,6 +10,18 @@ sudo node start-clock.js
 
 > If you just cloned this repository, you will have to install the dependencies first, by running `node install`
 
+Alternatively, if you would like to like to automatically start the clock script when the raspberry pi starts, modify `/etc/rc.local` by adding the following two lines (probably best to put them just before the `exit 0` line):
+
+```bash
+# some command in rc.local
+# another command in rc.local
+cd /home/pi/{path-to-lightclock-directory}/
+sudo node /home/pi/{path-to-lightclock-directory}/start-clock.js >> /home/pi/{path-to-save-error-logs}/LightClockLog.txt 2>&1
+# exit 0
+```
+
+Then when you reboot/boot the raspberry pi it will also start the clock. Any errors during boot will be logged to `LightClockLog.txt`.
+
 ### Web interface
 
 Running main.js will also run a HTML interface at `localhost:3000` on the raspberry pi. To forward this to your local machine, type (on your local machine):
