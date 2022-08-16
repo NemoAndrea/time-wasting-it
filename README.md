@@ -1,64 +1,43 @@
-# LightClock
+# *Time, wasting it* — a simple raspberry pi powered light clock
 
-### Starting the LightClock
+'Time, wasting-it' is a simple, raspberry pi-powered clock that uses **lights** instead of hands or digits to convey the time. At random points in time (configurable), the clock will show a playful light pattern. The demonstration and original build uses incandescent lights, but other types of lights can be used without modification.
 
-Simply navigate to the repository directory on the raspberry pi, and type
+![lightclock](img/lightclock.webp)
 
-```
-sudo node start-clock.js
-```
+> The project is a reimaging of the original *Time, wasting it* by **Bo Andrea**. The rebuilt version uses modern hardware to capture the original functionality, which was encoded by much lower level components. The main features (time to light method) and animations (random light patterns at random intervals) are carried over from this original art concept.
 
-> If you just cloned this repository, you will have to install the dependencies first, by running `node install`
+The light clock synchronises with internet time, and hence will automatically adjust to winter and summer time. The clock runs a web interface that can be accessed via SSH and exposes manual controls to the user. A different time can be set, some of the config options can be seen at a glance, and an animation can be played back. The web interface also has a virtual mimic of the current clock lights (intensity/PWM) settings, which is handy for debugging if you are hooking up your own custom lights.
 
-Alternatively, if you would like to like to automatically start the clock script when the raspberry pi starts, modify `/etc/rc.local` by adding the following two lines (probably best to put them just before the `exit 0` line):
+![[web interface screenshot]](img/web_interface.png)
 
-```bash
-# some command in rc.local
-# another command in rc.local
-cd /home/pi/{path-to-lightclock-directory}/
-sudo node /home/pi/{path-to-lightclock-directory}/start-clock.js >> /home/pi/{path-to-save-error-logs}/LightClockLog.txt 2>&1
-# exit 0
-```
+### Assembly
 
-Then when you reboot/boot the raspberry pi it will also start the clock. Any errors during boot will be logged to `LightClockLog.txt`.
+Assembling your own clock is not very difficult, provided you have soldering tools, a bit of time, 
 
-### Web interface
+Briefly, you will need the following components
 
-Running main.js will also run a HTML interface at `localhost:3000` on the raspberry pi. To forward this to your local machine, type (on your local machine):
+1. Raspberry pi zero (any variant will do, but a version with wireless connectivity is strongly recommended)
+2. The project PCB, which can be ordered online using the `gerber` files in this repository
+3. A power supply that has enough power to run your lights of choice
+4. A buck converter, if your lights of choice do not run at 5V (the raspberry pi will need 5V)
+5. 12 primary lights, that will convey the time. *must be PWM dimmable*
+6. Wires, through-hole components and soldering tools
 
-```
-ssh -L <yourlocalhost>:<raspberry_pi_ip>:3000 pi@<raspberry_pi_ip>
-```
+For a more detailed list of the required components and assembly guide, consult [the hardware setup section 📖](./docs/hardware.md)
 
-### Config
+### Software setup & usage
 
-You can configure the most common clock settings in `clock-config.json`.
+The software setup for the project (assuming the hardware is assembled and ready)  and configuration starts with the cloning of this repository onto the Raspberry Pi, and then a few simple commands, outlined in greater detail in [the software setup section 📖](./docs/software.md).
 
-The values settable are:
+> The code is all JavaScript, which at the time was chosen for easy interfacing with the web UI. 
 
-* `GPIO` : array of integers indicating the GPIO pin numbers as specified in `pigpio`. 
+### Project state
 
-  > If an empty array is provided `[]` the clock will not do any GPIO operations. This is useful if you want to run test's without the hardware and use only the web interface
+The project is complete, and is no longer seeing active development. A running version of the light clock is operational, and has been reliable in use for almost a year (as of time of writing).
 
-* `mirroredGPIO`: Boolean value indicating whether to reverse the order of the values in `GPIO`, resulting in the clock pattern being mirrored along the vertical axis. Useful if your hardware layout is mirrored. (e.g. your PCB orientation is backwards w.r.t. the lights of the clock). 
 
-* `GPIObuttons`: array of integers indication GPIO pin numbers to be used for buttons. Used in `PUD_UP` mode. **Only two actions are registered, so the maximum number of GPIO pins that can be entered here is 2.** Leaving it as an empty array  `[]` means no buttons will be used. 
 
-* `PWMlimits` : Object that specifies three limits for PWM values, which in  `pigpio`  can be set between [0,255]
 
-  * `PWMlimits.upper` : maximum PWM value that can be set for GPIO. Safety value and maximum intensity for animations.
-  * `PWMlimits.hourHand`: PWM value for the hour hand. Clamped to `PWMlimits.upper`.
-  * `PWMlimits.minuteHand`:PWM value for the minute hand. Clamped to `PWMlimits.upper`.
 
-* `timeMode`: String value that either sets the clock to automatic mode (i.e. internet time)  by `"auto"` or to a specific manual time (which will not update with passing time) as `"hh:mm"` or `"hh:mm:ss".`
 
-  > The manual time formats are useful for testing purposes. In normal use there is little reason to change it from `"auto"`
 
-* `randomAnimationFrequency`: a number indicating the mean time (in seconds) it takes for the clock to switch to animation mode. Animation probability is a geometric distribution. Hence the actual time between animation can vary quite a bit 
-
-  > E.g. if you set it to `60` then the mean time at which the animation will play is 60 seconds, but it may well be 40 seconds or 85.
-
-* `webInterface` : options for the html interface that can be used to play with or control the `LightClock`
-
-  * `webInterface.port`: port number to run application at `e.g. localhost:6969`
-  * `webInterface.enabled`: Boolean value determining whether to launch the web interface. The web Interface is not required for clock operation, so if you are not testing anything or need direct control over the clock, you could set it to `false`. 

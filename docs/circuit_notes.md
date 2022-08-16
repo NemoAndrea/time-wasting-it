@@ -1,8 +1,12 @@
+# Some notes about the circuit
+
+The sections below are back-of-the-envelope style calculations on the power consumption of the circuit board and give some insight into the design process. I am not an expert by any means on this material, so don't take the approaches below as gospel.
+
 ## Resistive lamps
 
-Lamps operate on 12V power.
+The lamps operate on 12V power.
 
-Power draw:
+Power draw (measured, specific to the type of lights used - best if you run your own measurements if you want to be sure):
 
 | PWM value | current draw | power (V*I) |
 | --------- | ------------ | ----------- |
@@ -18,13 +22,13 @@ Practical values may be at most PWM 60 -> so a total power draw of **34W**, whic
 
 ## MOSFETS
 
-The mosfets are of type `IRLZ44N`.
+The MOSFETs are of type `IRLZ44N`.
 
 Do these need heatsinks for our application?
 
 Let's have a look at the datasheet, provided by Infineon.
 
-<img src="img/IRLZ44N_figure_1.JPG" alt="IRLZ44N_figure_1" width="60%;" />
+<img src="../img/IRLZ44N_figure_1.JPG" alt="IRLZ44N_figure_1" width="60%;" />
 
 We have a VGS of 3.3 V, so we can look at our maximum current values (0.72A, see above), the V_ds is well under 0.1V. Let's for simplicity call it **0.1V V_ds**.
 
