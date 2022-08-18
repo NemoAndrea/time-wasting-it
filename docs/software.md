@@ -1,5 +1,7 @@
 # Software setup for *Time, wasting it*
 
+*To run JavaScript code on the Raspberry Pi, we will need to install Node.js. It is slightly nontrivial on a Raspberry Pi, but [if you follow these instructions](https://pimylifeup.com/raspberry-pi-nodejs/) it should be a matter of following along.*
+
 ### Starting the LightClock
 
 Simply navigate to the repository directory on the raspberry pi, and type
@@ -8,7 +10,7 @@ Simply navigate to the repository directory on the raspberry pi, and type
 sudo node start-clock.js
 ```
 
-> If you just cloned this repository, you will have to install the dependencies first, by running `node install`
+> If you just cloned this repository, you will have to install the dependencies first, by running `node install` in the repository root directory
 
 Alternatively, if you would like to like to automatically start the clock script when the raspberry pi starts, modify `/etc/rc.local` by adding the following two lines (probably best to put them just before the `exit 0` line):
 
