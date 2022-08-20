@@ -14,7 +14,7 @@ The light clock synchronises with internet time, and hence will automatically ad
 
 ### Assembly
 
-Assembling your own clock is not very difficult, provided you have soldering tools, a bit of time, 
+Assembling your own clock is not very difficult, provided you have soldering tools, a bit of time, and basic SSH knowledge. 
 
 Briefly, you will need the following components
 
