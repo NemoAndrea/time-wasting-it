@@ -8,3 +8,10 @@ For assembly instructions and more comments on the hardware, consult the [hardwa
 
 ![pcb_front_and_back](../../img/pcb_front_and_back.jpg)
 
+### Produced board
+
+I had my copies of the board make by **JLCPCB**. I think they came out looking quite nice.
+
+![pcb front](../../img/JLCPCB_front.JPG)
+
+![pcb back](../../img/JLCPCB_back.JPG)

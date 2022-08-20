@@ -4,7 +4,9 @@
 
 ![lightclock](img/lightclock.webp)
 
-> The project is a reimaging of the original *Time, wasting it* by **Bo Andrea**. The rebuilt version uses modern hardware to capture the original functionality, which was encoded by much lower level components. The main features (time to light method) and animations (random light patterns at random intervals) are carried over from this original art concept.
+> The project is a reimaging of the original artwork "*Time, wasting it...*" by **Bo Andrea**. The rebuilt version uses modern hardware to capture the original functionality, which was encoded by much lower level components. The main features (time to light method) and animations (random light patterns at random intervals) are carried over from this original art concept. The original description of the artwork was (in Dutch):
+>
+> "Koperdraad, buisgloeilampen, microprocessor. Meestal wordt slaafs de tijd aangegeven, zo nu en dan echter..."
 
 The light clock synchronises with internet time, and hence will automatically adjust to winter and summer time. The clock runs a web interface that can be accessed via SSH and exposes manual controls to the user. A different time can be set, some of the config options can be seen at a glance, and an animation can be played back. The web interface also has a virtual mimic of the current clock lights (intensity/PWM) settings, which is handy for debugging if you are hooking up your own custom lights.
 

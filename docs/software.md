@@ -2,6 +2,8 @@
 
 *To run JavaScript code on the Raspberry Pi, we will need to install Node.js. It is slightly nontrivial on a Raspberry Pi, but [if you follow these instructions](https://pimylifeup.com/raspberry-pi-nodejs/) it should be a matter of following along.*
 
+Before anything, make sure this repository is cloned (copied) onto the Raspberry Pi.
+
 ### Starting the LightClock
 
 Simply navigate to the repository directory on the raspberry pi, and type
